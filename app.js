@@ -92,6 +92,7 @@ app.get("/callback", (req, res)=>{ //our redirect uri route
         const access_token = body.access_token; 
         const refresh_token = body.refresh_token;
         console.log("access code retrieved: " + access_token);
+        console.log("refresh token retrieved: " + refresh_token);
         const query = querystring.stringify({
           access_token: access_token,
           refresh_token: refresh_token,
@@ -141,50 +142,74 @@ app.get("/callback", (req, res)=>{ //our redirect uri route
 //   console.log(data);
 // });
 
-app.get('/refreshtoken', function(req, res) {
+// app.get('/refreshtoken', function(req, res) {
+
+//   var refresh_token = req.query.refresh_token;
+//   var authOptions = {
+//     url: 'https://accounts.spotify.com/api/token',
+//     headers: { 'Authorization': 'Basic ' + (new Buffer.from(client_id + ':' + client_secret).toString('base64')) },
+//     form: {
+//       grant_type: 'refresh_token',
+//       refresh_token: refresh_token
+//     },
+//     json: true
+//   };
+
+//   request.post(authOptions, function(error, response, body) {
+//     if (!error && response.statusCode === 200) {
+//       var access_token = body.access_token;
+//       res.send({
+//         'access_token': access_token
+//       });
+//     }
+
+//     console.log("NEW access token: " + access_token);
+//   });
+// });
+
+
+
+
+
+app.get('/refreshtoken', async function(req, res) {
 
   var refresh_token = req.query.refresh_token;
-  var authOptions = {
-    url: 'https://accounts.spotify.com/api/token',
-    headers: { 'Authorization': 'Basic ' + (new Buffer.from(client_id + ':' + client_secret).toString('base64')) },
-    form: {
-      grant_type: 'refresh_token',
-      refresh_token: refresh_token
-    },
-    json: true
-  };
+  try {
+    const authOptions = {
+      url: 'https://accounts.spotify.com/api/token',
+      method: 'POST',
+      headers: {
+        'Authorization': 'Basic ' + Buffer.from(clientId + ':' + clientSecret).toString('base64'),
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: {
+        grant_type: 'refresh_token',
+        refresh_token: refresh_token
+      }
+    };
 
-  request.post(authOptions, function(error, response, body) {
-    if (!error && response.statusCode === 200) {
-      var access_token = body.access_token;
-      res.send({
-        'access_token': access_token
-      });
+    const response = await fetch(authOptions.url, {
+      method: authOptions.method,
+      headers: authOptions.headers,
+      body: authOptions.body
+    });
+
+    if (!response.ok) {
+      throw new Error('Request failed with status ' + response.status);
     }
 
-    console.log("NEW access token: " + access_token);
-  });
+    const data = await response.json();
+    const access_token = data.access_token;
+    res.send({
+      'access_token': access_token
+    });
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).send('An error occurred');
+  }
 });
 
 
-
-
-
-
-
-
-
-
-
-
-app.get("/moodring", (req,res)=>{
-  res.render("moodring")
-});
-
-
-app.get('/mymoodring', (req,res)=>{
-  res.render("mymoodring",{mood1: "faatttt", mood2: "hot", mood3:"whoCares"})
-});
 
 app.listen(PORT, ()=>{
     console.log(`Example app listening on port ${PORT}`);
