@@ -35,6 +35,12 @@ var generateRandomString = function (length) {
 
 var stateKey = 'spotify_auth_state'; 
 
+
+app.get("/", (req, res) => {
+  res.send(
+    "backend is running!"
+  )
+});
 // FLOW 1: Request Authorization  
 app.get("/login", (req,res)=>{
   var state = generateRandomString(16);
