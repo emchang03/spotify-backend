@@ -21,13 +21,6 @@ var client_secret = process.env.CLIENT_SECRET;
 var redirect_uri = process.env.REDIRECT_URI;
 const frontend_uri = process.env.FRONTEND_URI; 
 
-
-// home route for right now 
-app.get("/", function(req, res){
-    res.render("first");
-});
-
-
 // login route 
 var generateRandomString = function (length) {
   var text = "";
