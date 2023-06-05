@@ -1,6 +1,6 @@
 
 const express = require("express");  
-const PORT = 8888; 
+const PORT = process.env.PORT || 8888;
 const app = express(); 
 
 // app.use(express.urlencoded());
@@ -19,6 +19,7 @@ require("dotenv").config();
 var client_id = process.env.CLIENT_ID; 
 var client_secret = process.env.CLIENT_SECRET;
 var redirect_uri = process.env.REDIRECT_URI;
+const frontend_uri = process.env.FRONTEND_URI; 
 
 
 // home route for right now 
@@ -98,11 +99,10 @@ app.get("/callback", (req, res)=>{ //our redirect uri route
           refresh_token: refresh_token,
           expires_in: body.expires_in
         });
-
-        res.redirect("http://localhost:3000/?" + query);
+        res.redirect(`${frontend_uri}?${query}`);
       }
       else{
-        res.redirect("http://localhost:3000/");
+        res.redirect(`${frontend_uri}`);
       }
     });
   }
